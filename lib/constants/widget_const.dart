@@ -11,11 +11,16 @@ class HeadingRow {
           heading,
           style: style,
         ),
-        Text(
-          "See all",
-          style: mTextStyle.mStyle(
-            fontSize: 15,
-            fontColor: Colors.blue,
+        InkWell(
+          onTap: (){
+
+          },
+          child: Text(
+            "See all",
+            style: mTextStyle.mStyle(
+              fontSize: 15,
+              fontColor: Colors.blue,
+            ),
           ),
         )
       ],

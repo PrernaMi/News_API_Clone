@@ -6,6 +6,7 @@ import 'package:news_api_clone/constants/color_const.dart';
 import 'package:news_api_clone/constants/text_style.dart';
 import 'package:news_api_clone/constants/widget_const.dart';
 import 'package:news_api_clone/models/news_api_model.dart';
+import 'package:news_api_clone/screens/expanded_page.dart';
 import 'package:news_api_clone/utils/api_helper.dart';
 
 import '../bloc/bloc_state.dart';
@@ -18,7 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   MediaQueryData? mqData;
   String search = "Politic";
-  bool onChange = false;
   List<String> trendingNews = [
     "All",
     "Politic",
@@ -28,27 +28,21 @@ class _HomePageState extends State<HomePage> {
     "Food",
     "Electric"
   ];
+  bool seeAllHeadline = false;
 
   @override
   void initState() {
-    onChange = false;
-    context.read<BlocNews>().add(GetHeadingNewsBlocEvent());
+    context.read<BlocNews>().add(GetNewsBlocEvent(keywordTitle: search));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     mqData = MediaQuery.of(context);
-    onChange
-        ? context
-            .read<BlocNews>()
-            .add(GetEveryThingNewsBlocEvent(keywordTitle: search))
-        : context.read<BlocNews>().add(GetHeadingNewsBlocEvent());
     return Scaffold(
       appBar: AppBar(
         title: TextField(
           onChanged: (value) {
-            onChange = true;
             setState(() {
               if (search == "") {
                 search = "food";
@@ -59,6 +53,7 @@ class _HomePageState extends State<HomePage> {
           decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
               hintText: "Let's see what happened today....",
+              hintStyle: TextStyle(color: Colors.grey.shade500),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               )),
@@ -80,12 +75,13 @@ class _HomePageState extends State<HomePage> {
                     child: SizedBox(
                       height: mqData!.size.height,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           /*----Breaking News Heading------*/
                           SizedBox(
-                            height: mqData!.size.height * 0.07,
-                            child: HeadingRow.row(
-                                heading: "Breaking News !",
+                            height: mqData!.size.height * 0.05,
+                            child: Text("Breaking News !",
                                 style: mTextStyle.mStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -97,14 +93,19 @@ class _HomePageState extends State<HomePage> {
                             child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
-                                itemCount: state.newsData!.articles!.length,
+                                itemCount: state.newsHeadingData!.articles!.length,
                                 itemBuilder: (_, index) {
-                                  var data = state.newsData!.articles;
+                                  var data = state.newsHeadingData!.articles;
                                   return Padding(
                                     padding: EdgeInsets.only(
                                         right: 15, top: 10, bottom: 10),
                                     child: InkWell(
-                                      onTap: () {},
+                                      onTap: () {
+                                        print(data[index].content!);
+                                        Navigator.push(context, MaterialPageRoute(builder: (context){
+                                          return ExpandedNews(newsData: state.newsHeadingData!.articles![index],);
+                                        }));
+                                      },
                                       child: Container(
                                         height: mqData!.size.height * 0.2,
                                         width: mqData!.size.width * 0.8,
@@ -209,14 +210,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                           /*----Trending right now------*/
                           SizedBox(
-                            height: mqData!.size.height * 0.07,
-                            child: HeadingRow.row(
-                                heading: "Trending Right Now",
-                                style: mTextStyle.mStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontColor: Colors.black)),
-                          ),
+                              height: mqData!.size.height * 0.05,
+                              child: Text("Trending Right Now",
+                                  style: mTextStyle.mStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontColor: Colors.black))),
                           /*----Category Name ------*/
                           SizedBox(
                             height: mqData!.size.height * 0.06,
@@ -226,31 +225,43 @@ class _HomePageState extends State<HomePage> {
                                 itemCount: trendingNews.length,
                                 itemBuilder: (_, index) {
                                   return Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: OutlinedButton(
-                                        onPressed: () {
-                                          context.read<BlocNews>().add(
-                                              GetEveryThingNewsBlocEvent(
-                                                  keywordTitle:
-                                                      trendingNews[index]));
-                                        },
-                                        child: Text(
-                                          trendingNews[index],
-                                          style: mTextStyle.mStyle(
-                                              fontColor: Colors.black),
-                                        )),
+                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Row(
+                                      children: [
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            overlayColor: Colors.blue,
+                                          ),
+                                            onPressed: () {
+                                              context.read<BlocNews>().add(
+                                                  GetNewsBlocEvent(
+                                                      keywordTitle:
+                                                          trendingNews[index]));
+                                            },
+                                            child: Text(
+                                              trendingNews[index],
+                                              style: mTextStyle.mStyle(
+                                                  fontColor: Colors.black),
+                                            )),
+                                        SizedBox(width: 5,),
+                                      ],
+                                    ),
                                   );
                                 }),
                           ),
                           /*----Trending right now List ------*/
                           Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 15.0),
-                              child: ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: state.newsData!.articles!.length,
-                                  itemBuilder: (_, index) {
-                                    return Container(
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: state.newsEverythingData!.articles!.length,
+                                itemBuilder: (_, index) {
+                                  return InkWell(
+                                    onTap: (){
+                                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                                        return ExpandedNews(newsData: state.newsEverythingData!.articles![index]);
+                                      }));
+                                    },
+                                    child: Container(
                                       margin: EdgeInsets.symmetric(
                                         vertical: 10,
                                       ),
@@ -266,71 +277,72 @@ class _HomePageState extends State<HomePage> {
                                         children: [
                                           SizedBox(
                                             width: mqData!.size.width * 0.4,
+                                            height: mqData!.size.height*0.14,
                                             child: state
-                                                        .newsData!
+                                                        .newsEverythingData!
                                                         .articles![index]
                                                         .urlToImage !=
                                                     null
                                                 ? ClipRRect(
-                                              borderRadius: BorderRadius.circular(12),
-                                                  child: Image.network(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    child: Image.network(
                                                       state
-                                                          .newsData!
+                                                          .newsEverythingData!
                                                           .articles![index]
                                                           .urlToImage!,
                                                       fit: BoxFit.cover,
                                                     ),
-                                                )
+                                                  )
                                                 : Center(
                                                     child: Text(
                                                         "No Image loaded!!")),
                                           ),
                                           SizedBox(
                                             width: mqData!.size.width * 0.5,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  state.newsData!
-                                                      .articles![index].title!,
-                                                  softWrap: true,
-                                                  style: mTextStyle.mStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          13), // Optional as this is true by default
-                                                ),
-                                                Text(
-                                                  state
-                                                      .newsData!
-                                                      .articles![index]
-                                                      .source!
-                                                      .name!,
-                                                ),
-                                                state.newsData!.articles![index]
-                                                                .author !=
-                                                            null ||
-                                                        state
-                                                                .newsData!
-                                                                .articles![
-                                                                    index]
-                                                                .author !=
-                                                            ""
-                                                    ? Text(
-                                                        'Author: ${state.newsData!.articles![index].author}')
-                                                    : Text("")
-                                              ],
+                                            height: mqData!.size.height*0.1,
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    state.newsEverythingData!
+                                                        .articles![index].title!,
+                                                    softWrap: true,
+                                                    style: mTextStyle.mStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize:
+                                                            13), // Optional as this is true by default
+                                                  ),
+                                                  Text(
+                                                    state
+                                                        .newsEverythingData!
+                                                        .articles![index]
+                                                        .source!
+                                                        .name!,
+                                                  ),
+                                                  state.newsEverythingData!.articles![index]
+                                                              .author !=
+                                                          null
+                                                      ? Text(
+                                                          'Author: ${state.newsEverythingData!.articles![index].author}')
+                                                      : Text(
+                                                          "No Author name founded..")
+                                                ],
+                                              ),
                                             ),
                                           )
                                         ],
                                       ),
-                                    );
-                                  }),
-                            ),
+                                    ),
+                                  );
+                                }),
                           )
                         ],
                       ),

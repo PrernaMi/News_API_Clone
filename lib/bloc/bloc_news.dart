@@ -8,28 +8,31 @@ class BlocNews extends Bloc<BlocEvents, BlocState> {
 
   BlocNews({required this.apiHelper}) : super(BlocInitialState()) {
 
-    on<GetEveryThingNewsBlocEvent>((event, emit) async {
+    on<GetNewsBlocEvent>((event, emit) async {
       emit(BlocLoadingState());
       var data = await apiHelper!.getApi(
           url:
               "https://newsapi.org/v2/everything?q=${event.keywordTitle}&apiKey=4ab369a46bc84b2abb4ea4369b772b06");
+      var data1 = await apiHelper!.getApi(
+          url:
+          "https://newsapi.org/v2/top-headlines?country=us&apiKey=4ab369a46bc84b2abb4ea4369b772b06");
       if(data != null){
-        emit(BlocLoadedState(newsData: data));
+        emit(BlocLoadedState(newsEverythingData: data,newsHeadingData: data1));
       }else{
         emit(BlocErrorState(errorMsg: "No Data loaded...."));
       }
     });
 
-    on<GetHeadingNewsBlocEvent>((event, emit) async {
-      emit(BlocLoadingState());
-      var data = await apiHelper!.getApi(
-          url:
-              "https://newsapi.org/v2/top-headlines?country=us&apiKey=4ab369a46bc84b2abb4ea4369b772b06");
-      if(data != null){
-        emit(BlocLoadedState(newsData: data));
-      }else{
-        emit(BlocErrorState(errorMsg: "No Data loaded...."));
-      }
-    });
+    // on<GetHeadingNewsBlocEvent>((event, emit) async {
+    //   emit(BlocLoadingState());
+    //   var data = await apiHelper!.getApi(
+    //       url:
+    //           "https://newsapi.org/v2/top-headlines?country=us&apiKey=4ab369a46bc84b2abb4ea4369b772b06");
+    //   if(data != null){
+    //     emit(BlocLoadedState(newsData: data));
+    //   }else{
+    //     emit(BlocErrorState(errorMsg: "No Data loaded...."));
+    //   }
+    // });
   }
 }

@@ -1,8 +1,7 @@
 abstract class BlocEvents {}
 
-class GetEveryThingNewsBlocEvent extends BlocEvents {
+class GetNewsBlocEvent extends BlocEvents {
   String keywordTitle;
-  GetEveryThingNewsBlocEvent({required this.keywordTitle});
+  GetNewsBlocEvent({required this.keywordTitle});
 }
 
-class GetHeadingNewsBlocEvent extends BlocEvents {}

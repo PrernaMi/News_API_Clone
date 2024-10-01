@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
     "Electric"
   ];
   bool seeAllHeadline = false;
+  bool onChange = false;
 
   @override
   void initState() {
@@ -39,6 +40,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     mqData = MediaQuery.of(context);
+    if(onChange){
+      context.read<BlocNews>().add(GetNewsBlocEvent(keywordTitle: search));
+    }
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -47,6 +51,7 @@ class _HomePageState extends State<HomePage> {
               if (search == "") {
                 search = "food";
               }
+              onChange = true;
               search = value;
               setState(() {
 
@@ -305,15 +310,16 @@ class _HomePageState extends State<HomePage> {
                                           SizedBox(
                                             width: mqData!.size.width * 0.5,
                                             height: mqData!.size.height*0.1,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Flexible(
+                                                  fit: FlexFit.loose,
+                                                  child: Text(
                                                     state.newsEverythingData!
                                                         .articles![index].title!,
                                                     softWrap: true,
@@ -323,22 +329,22 @@ class _HomePageState extends State<HomePage> {
                                                         fontSize:
                                                             13), // Optional as this is true by default
                                                   ),
-                                                  Text(
-                                                    state
-                                                        .newsEverythingData!
-                                                        .articles![index]
-                                                        .source!
-                                                        .name!,
-                                                  ),
-                                                  state.newsEverythingData!.articles![index]
-                                                              .author !=
-                                                          null
-                                                      ? Text(
-                                                          'Author: ${state.newsEverythingData!.articles![index].author}')
-                                                      : Text(
-                                                          "No Author name founded..")
-                                                ],
-                                              ),
+                                                ),
+                                                Text(
+                                                  state
+                                                      .newsEverythingData!
+                                                      .articles![index]
+                                                      .source!
+                                                      .name!,
+                                                ),
+                                                state.newsEverythingData!.articles![index]
+                                                            .author !=
+                                                        null
+                                                    ? Text(
+                                                        'Author: ${state.newsEverythingData!.articles![index].author}')
+                                                    : Text(
+                                                        "No Author name founded..")
+                                              ],
                                             ),
                                           )
                                         ],

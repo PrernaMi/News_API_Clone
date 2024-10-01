@@ -72,7 +72,7 @@ class ExpandedNews extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 10.0),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.network(newsData!.urlToImage!)),
+                          child: Image.network(newsData!.urlToImage!,fit: BoxFit.cover,)),
                     )
                   : Text("No Image loaded..."),
               Text(

@@ -48,6 +48,9 @@ class _HomePageState extends State<HomePage> {
                 search = "food";
               }
               search = value;
+              setState(() {
+
+              });
             });
           },
           decoration: InputDecoration(

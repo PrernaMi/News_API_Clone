@@ -29,25 +29,17 @@ class ExpandedNews extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: SizedBox(
-                      width: mqData!.size.width * 0.5,
-                      child: Text(
-                        "Breaking News !",
-                        style: mTextStyle.mStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ),
+                  Text(
+                    "Breaking News !",
+                    style: mTextStyle.mStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: Text(
-                      newsData!.publishedAt!,
-                      style:
-                          mTextStyle.mStyle(fontColor: Colors.grey, fontSize: 15),
-                    ),
+                  Text(
+                    newsData!.publishedAt!,
+                    style:
+                        mTextStyle.mStyle(fontColor: Colors.grey, fontSize: 15),
                   ),
                 ],
               ),
